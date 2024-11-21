@@ -33,7 +33,7 @@ def lower_triangle_to_full_matrix(lower_triangle_matrix: np.ndarray):
     for i in range(num_cities):
         for j in range(i + 1):
             full_matrix[i][j] = lower_triangle_matrix[i][j]
-            full_matrix[j][i] = lower_triangle_matrix[i][j]  # Симметрично
+            full_matrix[j][i] = lower_triangle_matrix[i][j]
 
     return full_matrix
 
@@ -89,9 +89,7 @@ def traveling_salesman(matrix, names_cities):
 
 
 if __name__ == "__main__":
-    file_path = (
-        "/Users/aleksejepifanov/Desktop/пары/пары_5_сем/ИИвПС/graph2.xlsx"
-    )
+    file_path = "C:/Users/MECHREVO/Desktop/пары/пары_5_сем/ИИвПС/graph2.xlsx"
     lower_triangle_matrix, names_cities = read_matrix_from_excel(file_path)
     processed_matrix = preprocess_matrix(lower_triangle_matrix)
     full_matrix = lower_triangle_to_full_matrix(processed_matrix)
