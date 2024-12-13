@@ -32,19 +32,13 @@ def calculate_path_length(edges: Edges, path: list[int]) -> float:
     Рассчитывает длину пути по матрице расстояний.
     """
 
-    def find_edge_weight(source: int, target: int) -> float:
-        edge_weight = edges[source, target]
-        if edge_weight:
-            return edge_weight
-        return np.inf
-
-    length = sum(find_edge_weight(i, j) for i, j in zip(path, path[1:]))
-    length += find_edge_weight(path[-1], path[0])
+    length = sum(edges[i, j] for i, j in zip(path, path[1:]))
+    length += edges[path[-1], path[0]]
 
     return length
 
 
-def traveling_salesman(data: list[dict[str, Any]]) -> Any:
+def traveling_salesman(data: list[dict[str, Any]]) -> tuple[list[str], float]:
     """
     Решает задачу коммивояжёра методом полного перебора.
     """
@@ -68,12 +62,12 @@ def traveling_salesman(data: list[dict[str, Any]]) -> Any:
             min_length = current_length
             shortest_path = perm
 
-    shortest_path_named = []
+    shortest_path_named: list[str] = []
     for i in shortest_path:
         name = nodes[i]
         if name:
             shortest_path_named.append(name)
-    return shortest_path_named, shortest_path, min_length
+    return shortest_path_named, min_length
 
 
 if __name__ == "__main__":
@@ -81,6 +75,6 @@ if __name__ == "__main__":
     with open("json/elem_full.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    shortest_path_named, shortest_path, min_length = traveling_salesman(data)
+    shortest_path_named, min_length = traveling_salesman(data)
     print(f"Самый короткий путь: {shortest_path_named}")
     print(f"Длина самого короткого пути: {min_length}")
