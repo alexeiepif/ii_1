@@ -36,6 +36,7 @@ max-line-length = 88
 extend-exclude = '__pycache__'
 
 [tool.isort]
+profile = 'black'
 skip = '__pycache__'
 
 [tool.mypy]
