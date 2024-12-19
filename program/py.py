@@ -5,35 +5,25 @@
 
 import itertools
 import json
-from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
 
 
-@dataclass
-class Nodes:
-    nodes: dict[int, str]
-
-    def __getitem__(self, key: int) -> str:
-        return self.nodes.get(key, "")
-
-
-@dataclass
-class Edges:
-    edges: dict[tuple[int, int], float]
-
-    def __getitem__(self, key: tuple[int, int]) -> float:
-        return self.edges.get(key) or self.edges.get(key[::-1]) or np.inf
-
-
-def calculate_path_length(edges: Edges, path: list[int]) -> float:
+def calculate_path_length(
+    edges: dict[tuple[int, int], float], path: list[int]
+) -> float:
     """
     Рассчитывает длину пути по матрице расстояний.
     """
 
-    length = sum(edges[i, j] for i, j in zip(path, path[1:]))
-    length += edges[path[-1], path[0]]
+    length = sum(
+        edges.get((i, j), 0) or edges.get((j, i), 0) or np.inf
+        for i, j in zip(path, path[1:])
+    )
+    length += (
+        edges.get((path[-1], path[0]), 0) or edges.get((path[0], path[-1]), 0) or np.inf
+    )
 
     return length
 
@@ -43,11 +33,11 @@ def traveling_salesman(data: list[dict[str, Any]]) -> tuple[list[str], float]:
     Решает задачу коммивояжёра методом полного перебора.
     """
     data = [x["data"] for x in data]
-    node_count = len([x for x in data if "id" in x])
-    nodes = Nodes({int(x["id"]): x["label"] for x in data[:node_count]})
-    edges = Edges(
-        {(int(x["source"]), int(x["target"])): x["weight"] for x in data[node_count:]}
-    )
+    node_count = sum(1 for x in data if "id" in x)
+    nodes = {int(x["id"]): x["label"] for x in data[:node_count]}
+    edges = {
+        (int(x["source"]), int(x["target"])): x["weight"] for x in data[node_count:]
+    }
 
     shortest_path = []
     min_length = np.inf
@@ -71,7 +61,6 @@ def traveling_salesman(data: list[dict[str, Any]]) -> tuple[list[str], float]:
 
 
 if __name__ == "__main__":
-    file_path = "data/graph2.xlsx"
     with open("json/elem_full.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
